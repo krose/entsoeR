@@ -1,0 +1,11 @@
+Package: entsoe
+Type: Package
+Title: Entsoe-e API R Wrapper
+Version: 0.1.0
+Author: Kenneth Rose
+Maintainer: Kenneth Rose <kennethrose82@gmail.com>
+Description: An R wrapper for the entso-e API.
+License: MIT
+LazyData: TRUE
+Imports:
+  httr
