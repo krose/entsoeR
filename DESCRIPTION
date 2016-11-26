@@ -1,4 +1,4 @@
-Package: entsoe
+Package: entsoeR
 Type: Package
 Title: Entsoe-e API R Wrapper
 Version: 0.1.0
@@ -8,4 +8,9 @@ Description: An R wrapper for the entso-e API.
 License: MIT
 LazyData: TRUE
 Imports:
-  httr
+  httr,
+  rvest,
+  purrr,
+  lubridate,
+  stringr
+
