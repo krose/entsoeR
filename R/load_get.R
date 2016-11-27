@@ -23,8 +23,8 @@
 #' @param periodEnd
 #' @export
 load_get <- function(securityToken = NULL,
-                       documentType = "A65",
-                       processType = "A16",
+                       documentType = NULL,
+                       processType = NULL,
                        businessType = NULL,
                        psrType = NULL,
                        type_MarketAgreement.Type = NULL,
@@ -32,15 +32,15 @@ load_get <- function(securityToken = NULL,
                        auction.Type = NULL,
                        auction.Category = NULL,
                        classificationSequence_AttributeInstanceComponent.Position = NULL,
-                       outBiddingZone_Domain = "10YCZ-CEPS-----N",
+                       outBiddingZone_Domain = NULL,
                        biddingZone_Domain = NULL,
                        controlArea_Domain = NULL,
                        in_Domain = NULL,
                        out_Domain = NULL,
                        acquiring_Domain = NULL,
                        timeInterval = NULL,
-                       periodStart = "201512312300",
-                       periodEnd =   "201612312300",
+                       periodStart = NULL,
+                       periodEnd = NULL,
                        return_all = FALSE){
 
   # base_url <- list(
@@ -94,8 +94,14 @@ load_get <- function(securityToken = NULL,
   e_content <- httr::content(x = e_request, as = "text")
   e_content <- rvest::xml(e_content, encoding = "UTF")
 
-  doc_header <- load_parse_doc_header(e_content = e_content)
-  timeseries <- load_parse_timeseries(e_content = e_content)
+  doc_name <-
+    e_content %>%
+    rvest::xml_node("body") %>%
+    rvest::xml_children() %>%
+    names()
+
+  doc_header <- load_parse_doc_header(e_content = e_content, doc_name = doc_name)
+  timeseries <- load_parse_timeseries(e_content = e_content, doc_name = doc_name)
 
   if(return_all){
     return(list(doc_header = doc_header, time_series = timeseries))

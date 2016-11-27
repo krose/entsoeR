@@ -1,9 +1,9 @@
 
 
-load_parse_timeseries <- function(e_content){
+load_parse_timeseries <- function(e_content, doc_name){
 
   e_ts <-
-    e_content %>% rvest::xml_node("gl_marketdocument") %>%
+    e_content %>% rvest::xml_node(doc_name) %>%
     rvest::xml_nodes(xpath = "timeseries") %>%
     purrr::map(~load_parse_timeseries_individual(.)) %>%
     dplyr::bind_rows()
