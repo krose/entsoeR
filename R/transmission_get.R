@@ -22,6 +22,18 @@
 #' @param periodStart
 #' @param periodEnd
 #' @export
+#' @examples
+#' transmission_get(securityToken = securityToken, documentType = "A11",
+#'                  in_Domain = "10YCZ-CEPS-----N",
+#'                  out_Domain = "10YSK-SEPS-----K",
+#'                  periodStart = "201611232300",
+#'                  periodEnd = "201612312300")
+#'
+#' transmission_get(securityToken = securityToken, documentType = "A09",
+#'                  in_Domain = "10YCZ-CEPS-----N",
+#'                  out_Domain = "10YSK-SEPS-----K",
+#'                  periodStart = "201611232300",
+#'                  periodEnd = "201612312300")
 transmission_get <- function(securityToken = NULL,
                        documentType = NULL,
                        processType = NULL,
