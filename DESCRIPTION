@@ -8,9 +8,9 @@ Description: An R wrapper for the entso-e API.
 License: MIT
 LazyData: TRUE
 Imports:
-  httr,
-  rvest,
-  purrr,
-  lubridate,
-  stringr
-
+    httr,
+    rvest,
+    purrr,
+    lubridate,
+    stringr
+RoxygenNote: 5.0.1
