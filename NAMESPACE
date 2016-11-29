@@ -3,3 +3,4 @@
 export(entsoe_all_params)
 export(load_get)
 export(transmission_get)
+importFrom(dplyr,"%>%")

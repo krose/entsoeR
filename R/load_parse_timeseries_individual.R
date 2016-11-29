@@ -8,66 +8,62 @@
 #' @param ts_individual A single time series node.
 load_parse_timeseries_individual <- function(ts_individual){
 
-  ts_individual <-
-    ts_individual %>%
-    rvest::xml_children()
-
   ts_indi_list <- list()
 
   ts_indi_list$mrid <-
     ts_individual %>%
-    .[["mrid"]] %>%
-    rvest::xml_text()
+    rvest::html_node(xpath = "mrid") %>%
+    rvest::html_text()
 
   ts_indi_list$businesstype <-
     ts_individual %>%
-    .[["businesstype"]] %>%
-    rvest::xml_text()
+    rvest::html_node(xpath = "businesstype") %>%
+    rvest::html_text()
 
   ts_indi_list$objectaggregation <-
     try(ts_individual %>%
-          .[["objectaggregation"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "objectaggregation") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$in_domain.mrid <-
     try(ts_individual %>%
-          .[["in_domain.mrid"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "in_domain.mrid") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$out_domain.mrid <-
     try(ts_individual %>%
-          .[["out_domain.mrid"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "out_domain.mrid") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$outbiddingzone_domain.mrid <-
     try(ts_individual %>%
-          .[["outbiddingzone_domain.mrid"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "outbiddingzone_domain.mrid") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$registeredresources.mrid <-
     try(ts_individual %>%
-          .[["registeredresources.mrid"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "registeredresources.mrid") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$registeredresources.name <-
     try(ts_individual %>%
-          .[["registeredresources.name"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "registeredresources.name") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$quantity_measure_unit.name <-
     try(ts_individual %>%
-          .[["quantity_measure_unit.name"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "quantity_measure_unit.name") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list$curvetype <-
     ts_individual %>%
-    .[["curvetype"]] %>%
-    rvest::xml_text()
+  rvest::html_node(xpath = "curvetype") %>%
+    rvest::html_text()
 
   ts_indi_list$cancelledts <-
     try(ts_individual %>%
-          .[["cancelledts"]] %>%
-          rvest::xml_text(), silent = TRUE)
+          rvest::html_node(xpath = "cancelledts") %>%
+          rvest::html_text(), silent = TRUE)
 
   ts_indi_list <- lapply(ts_indi_list,
                          function(x){

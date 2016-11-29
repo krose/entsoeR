@@ -92,13 +92,13 @@ load_get <- function(securityToken = NULL,
   # httr::http_status(x = e_request)
 
   e_content <- httr::content(x = e_request, as = "text")
-  e_content <- rvest::xml(e_content, encoding = "UTF")
+  e_content <- xml2::read_html(e_content, encoding = "UTF")
 
   doc_name <-
     e_content %>%
-    rvest::xml_node("body") %>%
-    rvest::xml_children() %>%
-    names()
+    rvest::html_node("body") %>%
+    xml2::xml_children() %>%
+    xml2::xml_name()
 
   doc_header <- load_parse_doc_header(e_content = e_content, doc_name = doc_name)
   timeseries <- load_parse_timeseries(e_content = e_content, doc_name = doc_name)

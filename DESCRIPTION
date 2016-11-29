@@ -12,5 +12,6 @@ Imports:
     rvest,
     purrr,
     lubridate,
-    stringr
+    stringr,
+    tibble
 RoxygenNote: 5.0.1
