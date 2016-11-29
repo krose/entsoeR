@@ -8,14 +8,14 @@ entsoe_all_params <- function(){
 
   # subset the relevant lists
   entsoe_vars <-
-    rvest::html(entsoe_url) %>%
+    xml2::read_html(entsoe_url) %>%
     rvest::html_nodes(".sect1:nth-child(5) table") %>%
     rvest::html_table(header = TRUE) %>%
     .[c(1, 4:12)]
 
   # Get the table names
   names(entsoe_vars) <-
-    rvest::html(entsoe_url) %>%
+    xml2::read_html(entsoe_url) %>%
     rvest::html_nodes("#_complete_parameter_list+ .sectionbody h3") %>%
     rvest::html_text()
 
