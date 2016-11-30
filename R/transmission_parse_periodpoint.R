@@ -48,7 +48,7 @@ transmission_parse_period <- function(ts_individual){
     rvest::html_nodes(xpath = "quantity") %>%
     rvest::html_text() %>%
     as.numeric()
-browser()
+
   point_df <- tibble::tibble(datetime = datetime, quantity = quantity)
 
   congestioncost_price.amount <-
