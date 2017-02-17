@@ -22,6 +22,17 @@
 #' @param periodStart
 #' @param periodEnd
 #' @export
+#' @examples 
+#' 
+#' library(entsoeR)
+#' 
+#' load_get(securityToken = YOUR_TOKEN, 
+#'          documentType = "A65", 
+#'          processType = "A16", 
+#'          periodStart = "201702012300", 
+#'          periodEnd = "201702172300", 
+#'          outBiddingZone_Domain = "10YCZ-CEPS-----N")
+#'          
 load_get <- function(securityToken = NULL,
                        documentType = NULL,
                        processType = NULL,

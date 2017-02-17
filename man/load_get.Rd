@@ -17,4 +17,16 @@ load_get(securityToken = NULL, documentType = NULL, processType = NULL,
 \description{
 This wraps a GET request to the API
 }
+\examples{
+
+library(entsoeR)
+
+load_get(securityToken = YOUR_TOKEN, 
+         documentType = "A65", 
+         processType = "A16", 
+         periodStart = "201702012300", 
+         periodEnd = "201702172300", 
+         outBiddingZone_Domain = "10YCZ-CEPS-----N")
+         
+}
 
