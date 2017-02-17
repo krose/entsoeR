@@ -64,15 +64,19 @@ load_parse_timeseries_individual <- function(ts_individual){
     try(ts_individual %>%
           rvest::html_node(xpath = "cancelledts") %>%
           rvest::html_text(), silent = TRUE)
+  
+  helper_function <- function(x){
+    if(!is.na(x)){
+      if(stringr::str_detect(string = tolower(x), pattern = "error")){
+        x <- as.character(NA)
+      } else {
+        x <- x
+      }
+    }
+    x
+  }
 
-  ts_indi_list <- lapply(ts_indi_list,
-                         function(x){
-                           if(stringr::str_detect(tolower(x), "error")){
-                             return(as.character(NA))
-                           } else {
-                             return(x)
-                           }
-                         })
+  ts_indi_list <- lapply(ts_indi_list, helper_function)
 
   ts_indi_df <- tibble::as_tibble(ts_indi_list)
 

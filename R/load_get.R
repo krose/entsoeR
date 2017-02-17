@@ -89,10 +89,12 @@ load_get <- function(securityToken = NULL,
   e_request <- httr::GET(url = final_url)
 
   # check status
-  # httr::http_status(x = e_request)
+  if(httr::status_code(e_request) != 200){
+    stop(paste0(httr::status_code(e_request)$category, ". ", httr::status_code(e_request)$reason, ". ", httr::status_code(e_request)$message, ". "))
+  }
 
-  e_content <- httr::content(x = e_request, as = "text")
-  e_content <- xml2::read_html(e_content, encoding = "UTF")
+  e_content <- httr::content(x = e_request, as = "text", encoding = "UTF-8")
+  e_content <- xml2::read_html(e_content, encoding = "UTF-8")
 
   doc_name <-
     e_content %>%

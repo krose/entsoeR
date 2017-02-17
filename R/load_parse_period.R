@@ -47,7 +47,7 @@ load_parse_period <- function(ts_individual){
     rvest::html_text() %>%
     as.numeric()
 
-  point_df <- tibble(datetime = datetime, quantity = quantity)
+  point_df <- tibble::tibble(datetime = datetime, quantity = quantity)
 
   secondary_quantity <-
     ts_individual %>%
