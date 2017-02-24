@@ -45,13 +45,20 @@
 #'           outBiddingZone_Domain = "10YCZ-CEPS-----N")
 #'           
 #'  # 4.1.3. Week-Ahead Total Load Forecast [6.1.C]
-#'  # NOT WORKING resolution not implemented
+#'  # This returns a wierd result, see the second
+#'  # call where there are two different business types.
 #'  load_get(securityToken = YOUR_TOKEN, 
 #'           documentType = "A65", 
 #'           processType = "A32", 
 #'           periodStart = "201702162300", 
 #'           periodEnd = "201703192300", 
 #'           outBiddingZone_Domain = "10YCZ-CEPS-----N")
+#'  load_get(securityToken = securityToken, 
+#'           documentType = "A65", 
+#'           processType = "A32", 
+#'           periodStart = "201512312300", 
+#'           periodEnd = "201612312300", 
+#'           outBiddingZone_Domain = "10YCZ-CEPS-----N", return_all = TRUE)
 #'  
 #'  # 4.1.5. Year-Ahead Total Load Forecast [6.1.E]
 #'  # NOT WORKING resolution not implemented.
