@@ -34,6 +34,10 @@ load_parse_period <- function(ts_individual){
     datetime <-
       lubridate::ymd_hm(period_start, tz = "UTC") +
       lubridate::hours(datetime * resolution_qty - 1 * resolution_qty)
+  } else if(resolution_hm == "D") {
+    datetime <- 
+      lubridate::ymd_hm(period_start, tz = "UTC") +
+      lubridate::days(datetime * resolution_qty - 1 * resolution_qty)
   } else {
     stop("The date resolution is not supported")
   }
