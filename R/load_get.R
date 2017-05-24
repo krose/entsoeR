@@ -69,7 +69,7 @@
 #'           periodEnd = "201712312300", 
 #'           outBiddingZone_Domain = "10YCZ-CEPS-----N")
 #' 
-load_get <- function(securityToken = NULL,
+load_get <- function(securityToken = Sys.getenv("ENTSOE_PAT"),
                        documentType = NULL,
                        processType = NULL,
                        businessType = NULL,
@@ -87,8 +87,7 @@ load_get <- function(securityToken = NULL,
                        acquiring_Domain = NULL,
                        timeInterval = NULL,
                        periodStart = NULL,
-                       periodEnd = NULL,
-                       return_all = FALSE){
+                       periodEnd = NULL){
 
   # base_url <- list(
   #   scheme = "https",
@@ -152,14 +151,7 @@ load_get <- function(securityToken = NULL,
   doc_header <- load_parse_doc_header(e_content = e_content, doc_name = doc_name)
   timeseries <- load_parse_timeseries(e_content = e_content, doc_name = doc_name)
 
-  if(return_all){
-    return(list(doc_header = doc_header, time_series = timeseries))
-  } else {
-
-    return(timeseries[["points"]] %>%
-      dplyr::bind_rows())
-  }
-  e_content
+  list(doc_header = doc_header, time_series = timeseries)
 }
 
 
