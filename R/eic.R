@@ -80,11 +80,3 @@ eic <- function(){
   
   eic_xml
 }
-
-
-
-
-
-
-
-
