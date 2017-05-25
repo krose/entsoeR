@@ -4,15 +4,15 @@
 \alias{load_get}
 \title{This wraps a GET request to the API}
 \usage{
-load_get(securityToken = NULL, documentType = NULL, processType = NULL,
-  businessType = NULL, psrType = NULL, type_MarketAgreement.Type = NULL,
+load_get(documentType = NULL, processType = NULL, businessType = NULL,
+  psrType = NULL, type_MarketAgreement.Type = NULL,
   contract_MarketAgreement.Type = NULL, auction.Type = NULL,
   auction.Category = NULL,
   classificationSequence_AttributeInstanceComponent.Position = NULL,
   outBiddingZone_Domain = NULL, biddingZone_Domain = NULL,
   controlArea_Domain = NULL, in_Domain = NULL, out_Domain = NULL,
   acquiring_Domain = NULL, timeInterval = NULL, periodStart = NULL,
-  periodEnd = NULL, return_all = FALSE)
+  periodEnd = NULL, securityToken = Sys.getenv("ENTSOE_PAT"))
 }
 \description{
 This wraps a GET request to the API

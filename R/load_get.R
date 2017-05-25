@@ -3,7 +3,6 @@
 
 #' This wraps a GET request to the API
 #'
-#' @param securityToken
 #' @param documentType
 #' @param processType
 #' @param businessType
@@ -21,6 +20,7 @@
 #' @param timeInterval
 #' @param periodStart
 #' @param periodEnd
+#' @param securityToken
 #' @export
 #' @examples 
 #' 
@@ -69,8 +69,7 @@
 #'           periodEnd = "201712312300", 
 #'           outBiddingZone_Domain = "10YCZ-CEPS-----N")
 #' 
-load_get <- function(securityToken = Sys.getenv("ENTSOE_PAT"),
-                       documentType = NULL,
+load_get <- function(  documentType = NULL,
                        processType = NULL,
                        businessType = NULL,
                        psrType = NULL,
@@ -87,7 +86,8 @@ load_get <- function(securityToken = Sys.getenv("ENTSOE_PAT"),
                        acquiring_Domain = NULL,
                        timeInterval = NULL,
                        periodStart = NULL,
-                       periodEnd = NULL){
+                       periodEnd = NULL,
+                       securityToken = Sys.getenv("ENTSOE_PAT")){
 
   # base_url <- list(
   #   scheme = "https",
