@@ -24,16 +24,14 @@ library(entsoeR)
 # Actual Total Load
 # https://transparency.entsoe.eu/content/static_content/Static\%20content/web\%20api/Guide.html#_load_domain
 # 4.1.1
-load_get(securityToken = YOUR_TOKEN, 
-         documentType = "A65", 
+load_get(documentType = "A65", 
          processType = "A16", 
          periodStart = "201702012300", 
          periodEnd = "201702172300", 
          outBiddingZone_Domain = "10YCZ-CEPS-----N")
  
  # 4.1.2. Day-Ahead Total Load Forecast [6.1.B]
- load_get(securityToken = YOUR_TOKEN, 
-          documentType = "A65", 
+ load_get(documentType = "A65", 
           processType = "A01", 
           periodStart = "201702162300", 
           periodEnd = "201702192300", 
@@ -42,14 +40,12 @@ load_get(securityToken = YOUR_TOKEN,
  # 4.1.3. Week-Ahead Total Load Forecast [6.1.C]
  # This returns a wierd result, see the second
  # call where there are two different business types.
- load_get(securityToken = YOUR_TOKEN, 
-          documentType = "A65", 
+ load_get(documentType = "A65", 
           processType = "A32", 
           periodStart = "201702162300", 
           periodEnd = "201703192300", 
           outBiddingZone_Domain = "10YCZ-CEPS-----N")
- load_get(securityToken = securityToken, 
-          documentType = "A65", 
+ load_get(documentType = "A65", 
           processType = "A32", 
           periodStart = "201512312300", 
           periodEnd = "201612312300", 
@@ -57,8 +53,7 @@ load_get(securityToken = YOUR_TOKEN,
  
  # 4.1.5. Year-Ahead Total Load Forecast [6.1.E]
  # NOT WORKING resolution not implemented.
- load_get(securityToken = YOUR_TOKEN, 
-          documentType = "A65", 
+ load_get(documentType = "A65", 
           processType = "A33", 
           periodStart = "201612312300", 
           periodEnd = "201712312300", 
