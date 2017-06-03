@@ -3,7 +3,13 @@
 
 #' This wraps a GET request to the API
 #'
-#' @param documentType
+#' @param documentType The coded type of the document being sent. The 
+#'     document type identifies the principal characteristic of the 
+#'     status request. Refer to ENTSO-E 
+#'     Core Component Code list document for valid codes. The document 
+#'     type value must be exactly 3 alphanumeric characters (no blanks).
+#'     This information is mandatory. There's no dependency 
+#'     requirements.
 #' @param processType
 #' @param businessType
 #' @param psrType
