@@ -9,4 +9,3 @@ entsoe_all_params()
 \description{
 Function to download all params.
 }
-

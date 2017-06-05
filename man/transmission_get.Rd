@@ -30,4 +30,3 @@ transmission_get(securityToken = securityToken, documentType = "A09",
                  periodStart = "201611232300",
                  periodEnd = "201612312300")
 }
-
