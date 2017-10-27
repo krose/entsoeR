@@ -3,7 +3,13 @@
 
 #' This wraps a GET request to the API
 #'
-#' @param documentType
+#' @param documentType The coded type of the document being sent. The 
+#'     document type identifies the principal characteristic of the 
+#'     status request. Refer to ENTSO-E 
+#'     Core Component Code list document for valid codes. The document 
+#'     type value must be exactly 3 alphanumeric characters (no blanks).
+#'     This information is mandatory. There's no dependency 
+#'     requirements.
 #' @param processType
 #' @param businessType
 #' @param psrType
@@ -29,6 +35,13 @@
 #' # Actual Total Load
 #' # https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_load_domain
 #' # 4.1.1
+#' # - one year range limit
+#' # - minimum time interval in query response is one MTU period.
+#' # Mandatory params
+#' # - docuemtnType
+#' # - ProcessType
+#' # - outBiddingZone_Domain
+#' # - TimeInterval or combination of PeriodStart and PeriodEnd
 #' load_get(documentType = "A65", 
 #'          processType = "A16", 
 #'          periodStart = "201702012300", 
