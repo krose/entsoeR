@@ -3,5 +3,6 @@
 export(eic)
 export(entsoe_all_params)
 export(load_get)
+export(outages_get)
 export(transmission_get)
 importFrom(dplyr,"%>%")

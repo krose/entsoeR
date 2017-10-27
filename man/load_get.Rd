@@ -60,4 +60,3 @@ load_get(documentType = "A65",
           outBiddingZone_Domain = "10YCZ-CEPS-----N")
 
 }
-

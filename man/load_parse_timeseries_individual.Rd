@@ -13,4 +13,3 @@ load_parse_timeseries_individual(ts_individual)
 The time series structure can be individual so I need to add the
 possible nodes that can pop-up.
 }
-
