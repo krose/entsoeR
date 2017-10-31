@@ -118,6 +118,10 @@ outages_get <- function(  documentType = NULL,
   tempdir_path <- tempdir()
   e_request <- httr::GET(url = final_url, httr::write_disk(tempfile_path))
   
+  # Check if the get request returns application/zip
+  # if yes, save to folder and unzip
+  # else, parse the file.
+  
   zip_files <- unzip(tempfile_path, list = TRUE)
   zip_files$path <- paste0(tempdir_path, "/", zip_files$Name)
   
