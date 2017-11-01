@@ -84,58 +84,64 @@ outages_get <- function(  documentType = NULL,
                        periodEnd = NULL,
                        securityToken = Sys.getenv("ENTSOE_PAT")){
   
-
-  # Build url
-  base_url <- "https://transparency.entsoe.eu/api?"
-  
-  final_url <- paste0(base_url, "securityToken=", securityToken)
-  
-  if(!is.null(documentType)) final_url <- paste0(final_url, "&documentType=", documentType)
-  if(!is.null(processType)) final_url <- paste0(final_url, "&processType=", processType)
-  if(!is.null(businessType)) final_url <- paste0(final_url, "&businessType=", businessType)
-  if(!is.null(psrType)) final_url <- paste0(final_url, "&psrType=", psrType)
-  if(!is.null(type_MarketAgreement.Type)) final_url <- paste0(final_url, "&type_MarketAgreement.Type=", type_MarketAgreement.Type)
-  if(!is.null(contract_MarketAgreement.Type)) final_url <- paste0(final_url, "&contract_MarketAgreement.Type=", contract_MarketAgreement.Type)
-  if(!is.null(auction.Type)) final_url <- paste0(final_url, "&auction.Type=", auction.Type)
-  if(!is.null(auction.Category)) final_url <- paste0(final_url, "&auction.Category=", auction.Category)
-  if(!is.null(classificationSequence_AttributeInstanceComponent.Position)){
-    final_url <- paste0(final_url,
-                        "&classificationSequence_AttributeInstanceComponent.Position=",
-                        classificationSequence_AttributeInstanceComponent.Position)
-  }
-  if(!is.null(outBiddingZone_Domain)) final_url <- paste0(final_url, "&outBiddingZone_Domain=", outBiddingZone_Domain)
-  if(!is.null(biddingZone_Domain)) final_url <- paste0(final_url, "&biddingZone_Domain=", biddingZone_Domain)
-  if(!is.null(controlArea_Domain)) final_url <- paste0(final_url, "&controlArea_Domain=", controlArea_Domain)
-  if(!is.null(in_Domain)) final_url <- paste0(final_url, "&in_Domain=", in_Domain)
-  if(!is.null(out_Domain)) final_url <- paste0(final_url, "&out_Domain=", out_Domain)
-  if(!is.null(acquiring_Domain)) final_url <- paste0(final_url, "&acquiring_Domain=", acquiring_Domain)
-  if(!is.null(timeInterval)) final_url <- paste0(final_url, "&timeInterval=", timeInterval)
-  if(!is.null(periodStart)) final_url <- paste0(final_url, "&periodStart=", periodStart)
-  if(!is.null(periodEnd)) final_url <- paste0(final_url, "&periodEnd=", periodEnd)
+  final_url <- entsoe_create_url(documentType = documentType,
+                                 processType = processType,
+                                 businessType = businessType,
+                                 psrType = psrType,
+                                 type_MarketAgreement.Type = type_MarketAgreement.Type,
+                                 contract_MarketAgreement.Type = contract_MarketAgreement.Type,
+                                 auction.Type = auction.Type,
+                                 auction.Category = auction.Category,
+                                 classificationSequence_AttributeInstanceComponent.Position = classificationSequence_AttributeInstanceComponent.Position,
+                                 outBiddingZone_Domain = outBiddingZone_Domain,
+                                 biddingZone_Domain = biddingZone_Domain,
+                                 controlArea_Domain = controlArea_Domain,
+                                 in_Domain = in_Domain,
+                                 out_Domain = out_Domain,
+                                 acquiring_Domain = acquiring_Domain,
+                                 timeInterval = timeInterval,
+                                 periodStart = periodStart,
+                                 periodEnd = periodEnd,
+                                 securityToken = securityToken)
   
   # make GET request
   tempfile_path <- tempfile()
   tempdir_path <- tempdir()
   e_request <- httr::GET(url = final_url, httr::write_disk(tempfile_path))
-  
+
+  # check status
+  if(httr::status_code(e_request) != 200){
+    stop(paste0(httr::http_status(e_request)$category, ". ",
+                httr::http_status(e_request)$reason, ". ",
+                httr::http_status(e_request)$message, ". ",
+                e_request %>% httr::content(., encoding = "UTF-8") %>% 
+                  xml2::xml_child(., 8) %>% 
+                  xml2::xml_child(., 2) %>% 
+                  xml2::xml_text()))
+  }
+    
   # Check if the get request returns application/zip
   # if yes, save to folder and unzip
   # else, parse the file.
-  
-  zip_files <- unzip(tempfile_path, list = TRUE)
-  zip_files$path <- paste0(tempdir_path, "/", zip_files$Name)
-  
-  unzip(zipfile = tempfile_path, exdir = tempdir_path)
-  
-  unzipped_files <- purrr::map(zip_files$path, ~xml2::read_html(.x, encoding = "UTF-8"))
-  
-  unzipped_files <- purrr::map(unzipped_files, ~outages_helper(.x))
-  # # check status
-  # if(httr::status_code(e_request) != 200){
-  #   stop(paste0(httr::http_status(e_request)$category, ". ", 
-  #               httr::http_status(e_request)$reason, ". ", 
-  #               httr::http_status(e_request)$message, ". "))
-  # }
+  if(httr::http_type(e_request) == "application/zip"){
+    
+    zip_files <- unzip(tempfile_path, list = TRUE)
+    zip_files$path <- paste0(tempdir_path, "/", zip_files$Name)
+    
+    unzip(zipfile = tempfile_path, exdir = tempdir_path)
+    
+    unzipped_files <- purrr::map(zip_files$path, ~xml2::read_html(.x, encoding = "UTF-8"))
+    
+    e_content <- purrr::map(unzipped_files, ~outages_helper(.x))
+    
+  } else if(httr::http_type(e_request) == "application/xml"){
+    
+    e_content <- httr::content(e_request, encoding = "UTF-8")
+    
+  } else {
+    
+    stop("Http type not supported.", call. = FALSE)
+  }
   # 
   # e_content <- httr::content(x = e_request, encoding = "UTF-8")
   # e_content <- xml2::read_html(e_content, encoding = "UTF-8")
@@ -146,7 +152,7 @@ outages_get <- function(  documentType = NULL,
   #   xml2::xml_children() %>%
   #   xml2::xml_name()
   
-  unzipped_files
+  e_content
 }
 
 
