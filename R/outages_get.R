@@ -171,16 +171,17 @@ outages_helper <- function(html_doc){
            "receiver_MarketParticipant.marketRole.type", 
            "unavailability_Time_Period.timeInterval",
            "docStatus")
+  ids <- tolower(ids)
   
   id_extractor <- function(html_doc, id){
     
-    rvest::html_nodes(html_doc, id) %>%
+    rvest::html_nodes(html_doc, xpath = id) %>%
       rvest::html_text() %>%
       tibble::tibble(id = id, value = .)
   }
   
   purrr::map(ids, ~id_extractor(html_doc, .x)) %>% 
-    bind_rows()
+    dplyr::bind_rows()
 }
 
 
