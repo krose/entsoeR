@@ -214,6 +214,38 @@ outages_helper <- function(html_doc){
   
   doc_result$timeseries <- list(doc_result_ts)
   
+  ids <- c("timeInterval", 
+           "resolution")
+  ids <- tolower(ids)
+  
+  html_ts_ps <- 
+    html_ts %>% 
+    rvest::html_nodes("available_period")
+  
+  doc_result_ts_ps <- 
+    purrr::map(ids, ~id_extractor(html_ts_ps, .x)) %>% 
+    dplyr::bind_rows() %>%
+    tidyr::spread(id, value) %>%
+    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  
+  doc_result$point_series <- list(doc_result_ts_ps)
+  
+  ids <- c("position", 
+           "quantity")
+  ids <- tolower(ids)
+  
+  html_ts_ps_p <- 
+    html_ts_ps %>% 
+    rvest::html_nodes("point")
+  
+  doc_result_ts_ps_p <- 
+    purrr::map(ids, ~id_extractor(html_ts_ps_p, .x)) %>% 
+    dplyr::bind_rows() %>%
+    tidyr::spread(id, value) %>%
+    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  
+  doc_result$point <- list(doc_result_ts_ps_p)
+  
   ##########################################
   # parse reason
   #############################################
