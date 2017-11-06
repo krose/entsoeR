@@ -133,6 +133,7 @@ outages_get <- function(  documentType = NULL,
     unzipped_files <- purrr::map(zip_files$path, ~xml2::read_html(.x, encoding = "UTF-8"))
     
     e_content <- purrr::map(unzipped_files, ~outages_helper(.x))
+    e_content <- dplyr::bind_rows(e_content)
     
   } else if(httr::http_type(e_request) == "application/xml"){
     
@@ -142,16 +143,7 @@ outages_get <- function(  documentType = NULL,
     
     stop("Http type not supported.", call. = FALSE)
   }
-  # 
-  # e_content <- httr::content(x = e_request, encoding = "UTF-8")
-  # e_content <- xml2::read_html(e_content, encoding = "UTF-8")
-  # 
-  # doc_name <-
-  #   e_content %>%
-  #   rvest::html_node("body") %>%
-  #   xml2::xml_children() %>%
-  #   xml2::xml_name()
-  
+
   e_content
 }
 
@@ -180,8 +172,67 @@ outages_helper <- function(html_doc){
       tibble::tibble(id = id, value = .)
   }
   
-  purrr::map(ids, ~id_extractor(html_doc, .x)) %>% 
-    dplyr::bind_rows()
+  doc_result <- 
+    purrr::map(ids, ~id_extractor(html_doc, .x)) %>% 
+    dplyr::bind_rows() %>%
+    tidyr::spread(id, value) %>%
+    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  
+  ####################################
+  # parse timeseries
+  ######################################
+  
+  ids <- c("mRID",
+           "businessType",
+           "biddingZone_Domain.mRID",
+           "in_Domain.mRID",
+           "out_Domain.mRID",
+           "start_DateAndOrTime.date",
+           "start_DateAndOrTime.time",
+           "end_DateAndOrTime.date",
+           "end_DateAndOrTime.time",
+           "quantity_Measure_Unit.name",
+           "curveType",
+           "production_RegisteredResource.mRID",
+           "production_RegisteredResource.name",
+           "production_RegisteredResource.location.name",
+           "production_RegisteredResource.pSRType.psrType",
+           "production_RegisteredResource.pSRType.powerSystemResources.mRID",
+           "production_RegisteredResource.pSRType.powerSystemResources.name",
+           "production_RegisteredResource.pSRType.powerSystemResources.nominalP")
+  ids <- tolower(ids)
+  
+  html_ts <- 
+    html_doc %>% 
+    rvest::html_nodes("timeseries")
+  
+  doc_result_ts <- 
+    purrr::map(ids, ~id_extractor(html_ts, .x)) %>% 
+    dplyr::bind_rows() %>%
+    tidyr::spread(id, value) %>%
+    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  
+  doc_result$timeseries <- list(doc_result_ts)
+  
+  ##########################################
+  # parse reason
+  #############################################
+  
+  ids <- c("code", "text")
+  
+  html_reason <- 
+    html_doc %>% 
+    rvest::html_nodes("reason")
+  
+  doc_result_reason <- 
+    purrr::map(ids, ~id_extractor(html_reason, .x)) %>% 
+    dplyr::bind_rows() %>%
+    tidyr::spread(id, value)
+  
+  doc_result$reason <- list(doc_result_reason)
+  doc_result <- tidyr::unnest(doc_result, reason, .sep = "_")
+
+  doc_result
 }
 
 
