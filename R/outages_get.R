@@ -4,6 +4,9 @@
 
 
 #' This wraps a GET request to the API
+#' 
+#' There's a limit of 200 documents, so the API will return an
+#' error if this limit is reached.
 #'
 #' @param documentType
 #' @param processType
@@ -56,7 +59,14 @@
 #'              biddingZone_Domain = "10YCZ-CEPS-----N",
 #'              periodStart = "201512312300", 
 #'              periodEnd = "201612312300")
-#'              
+#'  
+#'  # French nukes
+#'  outages_get(documentType = "A80",
+#'              businessType = "A53",
+#'              biddingZone_Domain = "10YFR-RTE------C",
+#'              periodStart = "201711072300", 
+#'              periodEnd = "201712312300")
+#'  
 #'  4.6.5. Unavailability of Production Units [15.1.C&D]
 #'  outages_get(documentType = "A77",
 #'              businessType = "A53",
@@ -64,25 +74,25 @@
 #'              periodStart = "201512312300", 
 #'              periodEnd = "201612312300")
 #' 
-outages_get <- function(  documentType = NULL,
-                       processType = NULL,
-                       businessType = NULL,
-                       psrType = NULL,
-                       type_MarketAgreement.Type = NULL,
-                       contract_MarketAgreement.Type = NULL,
-                       auction.Type = NULL,
-                       auction.Category = NULL,
-                       classificationSequence_AttributeInstanceComponent.Position = NULL,
-                       outBiddingZone_Domain = NULL,
-                       biddingZone_Domain = NULL,
-                       controlArea_Domain = NULL,
-                       in_Domain = NULL,
-                       out_Domain = NULL,
-                       acquiring_Domain = NULL,
-                       timeInterval = NULL,
-                       periodStart = NULL,
-                       periodEnd = NULL,
-                       securityToken = Sys.getenv("ENTSOE_PAT")){
+outages_get <- function(documentType = NULL,
+                        processType = NULL,
+                        businessType = NULL,
+                        psrType = NULL,
+                        type_MarketAgreement.Type = NULL,
+                        contract_MarketAgreement.Type = NULL,
+                        auction.Type = NULL,
+                        auction.Category = NULL,
+                        classificationSequence_AttributeInstanceComponent.Position = NULL,
+                        outBiddingZone_Domain = NULL,
+                        biddingZone_Domain = NULL,
+                        controlArea_Domain = NULL,
+                        in_Domain = NULL,
+                        out_Domain = NULL,
+                        acquiring_Domain = NULL,
+                        timeInterval = NULL,
+                        periodStart = NULL,
+                        periodEnd = NULL,
+                        securityToken = Sys.getenv("ENTSOE_PAT")){
   
   final_url <- entsoe_create_url(documentType = documentType,
                                  processType = processType,
