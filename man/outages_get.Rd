@@ -15,7 +15,8 @@ outages_get(documentType = NULL, processType = NULL, businessType = NULL,
   periodEnd = NULL, securityToken = Sys.getenv("ENTSOE_PAT"))
 }
 \description{
-This wraps a GET request to the API
+There's a limit of 200 documents, so the API will return an
+error if this limit is reached.
 }
 \examples{
 
@@ -49,7 +50,14 @@ outages_get(documentType = "A76",
              biddingZone_Domain = "10YCZ-CEPS-----N",
              periodStart = "201512312300", 
              periodEnd = "201612312300")
-             
+ 
+ # French nukes
+ outages_get(documentType = "A80",
+             businessType = "A53",
+             biddingZone_Domain = "10YFR-RTE------C",
+             periodStart = "201711072300", 
+             periodEnd = "201712312300")
+ 
  4.6.5. Unavailability of Production Units [15.1.C&D]
  outages_get(documentType = "A77",
              businessType = "A53",
