@@ -162,6 +162,17 @@ outages_helper <- function(html_doc){
   
   html_doc <- html_doc %>% rvest::html_node("unavailability_marketdocument")
   
+  id_extractor <- function(html_doc, id){
+    
+    rvest::html_nodes(html_doc, xpath = id) %>%
+      rvest::html_text() %>%
+      tibble::tibble(id = id, value = .)
+  }
+
+  ###########################################
+  # extract doc info
+  #############################################
+  
   ids <- c("mRID", 
            "revisionNumber", 
            "type", 
@@ -174,14 +185,7 @@ outages_helper <- function(html_doc){
            "unavailability_Time_Period.timeInterval",
            "docStatus")
   ids <- tolower(ids)
-  
-  id_extractor <- function(html_doc, id){
-    
-    rvest::html_nodes(html_doc, xpath = id) %>%
-      rvest::html_text() %>%
-      tibble::tibble(id = id, value = .)
-  }
-  
+
   doc_result <- 
     purrr::map(ids, ~id_extractor(html_doc, .x)) %>% 
     dplyr::bind_rows() %>%
@@ -189,7 +193,7 @@ outages_helper <- function(html_doc){
     dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
   
   ####################################
-  # parse timeseries
+  # extract timeseries
   ######################################
   
   ids <- c("mRID",
@@ -257,7 +261,7 @@ outages_helper <- function(html_doc){
   doc_result$point <- list(doc_result_ts_ps_p)
   
   ##########################################
-  # parse reason
+  # extract reason
   #############################################
   
   ids <- c("code", "text")
