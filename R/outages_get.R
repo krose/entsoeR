@@ -158,17 +158,20 @@ outages_get <- function(documentType = NULL,
 }
 
 
+id_extractor <- function(html_doc, ids) {
+  
+  r <- rvest::html_nodes(html_doc, xpath = paste(ids, collapse = "|"))
+  
+  as.list(r %>% rvest::html_text()) %>% 
+    purrr::set_names(r %>% rvest::html_name()) %>% 
+    tibble::as_tibble()
+}
+
+
 outages_helper <- function(html_doc){
   
   html_doc <- html_doc %>% rvest::html_node("unavailability_marketdocument")
   
-  id_extractor <- function(html_doc, id){
-    
-    rvest::html_nodes(html_doc, xpath = id) %>%
-      rvest::html_text() %>%
-      tibble::tibble(id = id, value = .)
-  }
-
   ###########################################
   # extract doc info
   #############################################
@@ -185,12 +188,10 @@ outages_helper <- function(html_doc){
            "unavailability_Time_Period.timeInterval",
            "docStatus")
   ids <- tolower(ids)
-
-  doc_result <- 
-    purrr::map(ids, ~id_extractor(html_doc, .x)) %>% 
-    dplyr::bind_rows() %>%
-    tidyr::spread(id, value) %>%
-    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  
+  doc_result <-
+    id_extractor(html_doc, ids) %>%
+    {suppressMessages(readr::type_convert(.))}
   
   ####################################
   # extract timeseries
@@ -220,11 +221,9 @@ outages_helper <- function(html_doc){
     html_doc %>% 
     rvest::html_nodes("timeseries")
   
-  doc_result_ts <- 
-    purrr::map(ids, ~id_extractor(html_ts, .x)) %>% 
-    dplyr::bind_rows() %>%
-    tidyr::spread(id, value) %>%
-    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+  doc_result_ts <-
+    id_extractor(html_ts, ids) %>% 
+    {suppressMessages(readr::type_convert(.))}
   
   doc_result$timeseries <- list(doc_result_ts)
   
@@ -237,10 +236,8 @@ outages_helper <- function(html_doc){
     rvest::html_nodes("available_period")
   
   doc_result_ts_ps <- 
-    purrr::map(ids, ~id_extractor(html_ts_ps, .x)) %>% 
-    dplyr::bind_rows() %>%
-    tidyr::spread(id, value) %>%
-    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+    id_extractor(html_ts_ps, ids) %>% 
+    {suppressMessages(readr::type_convert(.))}
   
   doc_result$point_series <- list(doc_result_ts_ps)
   
@@ -253,10 +250,8 @@ outages_helper <- function(html_doc){
     rvest::html_nodes("point")
   
   doc_result_ts_ps_p <- 
-    purrr::map(ids, ~id_extractor(html_ts_ps_p, .x)) %>% 
-    dplyr::bind_rows() %>%
-    tidyr::spread(id, value) %>%
-    dplyr::mutate_all(dplyr::funs(readr::parse_guess(.)))
+    id_extractor(html_ts_ps_p, ids) %>% 
+    {suppressMessages(readr::type_convert(.))}
   
   doc_result$point <- list(doc_result_ts_ps_p)
   
@@ -271,16 +266,11 @@ outages_helper <- function(html_doc){
     rvest::html_nodes("reason")
   
   doc_result_reason <- 
-    purrr::map(ids, ~id_extractor(html_reason, .x)) %>% 
-    dplyr::bind_rows() %>%
-    tidyr::spread(id, value)
+    id_extractor(html_reason, ids)
   
   doc_result$reason <- list(doc_result_reason)
   doc_result <- tidyr::unnest(doc_result, reason, .sep = "_")
-
+  
   doc_result
 }
-
-
-
 
