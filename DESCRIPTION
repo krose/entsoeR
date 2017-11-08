@@ -10,9 +10,8 @@ LazyData: TRUE
 Imports:
     httr,
     rvest,
-    purrr,
+    tidyverse,
     lubridate,
-    stringr,
-    tibble
+    stringr
 RoxygenNote: 6.0.1
 Suggests: testthat
