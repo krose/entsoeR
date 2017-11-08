@@ -147,7 +147,8 @@ outages_get <- function(documentType = NULL,
     
   } else if(httr::http_type(e_request) == "application/xml"){
     
-    e_content <- httr::content(e_request, encoding = "UTF-8")
+    # not tested yet.
+    e_content <- outages_helper(httr::content(e_request, encoding = "UTF-8"))
     
   } else {
     
