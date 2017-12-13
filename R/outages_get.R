@@ -37,7 +37,7 @@
 #' outages_get(documentType = "A76", 
 #'             periodStart = "201702012300", 
 #'             periodEnd = "201702172300", 
-#'             outBiddingZone_Domain = "10YCZ-CEPS-----N")
+#'             BiddingZone_Domain = "10YCZ-CEPS-----N")
 #'  
 #'  # 4.6.2. Unavailability of Transmission Infrastructure [10.1.A&B]
 #'  outages_get(documentType = "A78", 
@@ -117,17 +117,24 @@ outages_get <- function(documentType = NULL,
   # make GET request
   tempfile_path <- tempfile()
   tempdir_path <- tempdir()
-  e_request <- httr::GET(url = final_url, httr::write_disk(tempfile_path))
+  e_request <- httr::GET(url = final_url, httr::write_disk(tempfile_path, overwrite = TRUE))
 
   # check status
-  if(httr::status_code(e_request) != 200){
+  if(httr::status_code(e_request) == 400){
     stop(paste0(httr::http_status(e_request)$category, ". ",
                 httr::http_status(e_request)$reason, ". ",
                 httr::http_status(e_request)$message, ". ",
                 e_request %>% httr::content(., encoding = "UTF-8") %>% 
                   xml2::xml_child(., 8) %>% 
                   xml2::xml_child(., 2) %>% 
-                  xml2::xml_text()))
+                  xml2::xml_text()), call. = FALSE)
+  } else if(httr::status_code(e_request) == 500){
+    stop(paste0(httr::http_status(e_request)$category, ". ",
+                httr::http_status(e_request)$reason, ". ",
+                httr::http_status(e_request)$message, ". ",
+                e_request %>% httr::content(., encoding = "UTF-8") %>% 
+                  rvest::html_node("body") %>% 
+                  rvest::html_text()), call. = FALSE)
   }
     
   # Check if the get request returns application/zip
