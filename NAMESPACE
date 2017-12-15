@@ -2,6 +2,7 @@
 
 export(eic)
 export(entsoe_all_params)
+export(generation_get)
 export(load_get)
 export(outages_get)
 export(transmission_get)
