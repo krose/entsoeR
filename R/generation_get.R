@@ -74,14 +74,6 @@
 #'                periodStart = "201512312300",
 #'                periodEnd = "201612312300")
 #'  
-#' # 4.4.5. Actual Generation Output per Generation Unit [16.1.A]
-#' generation_get(documentType = "A73",
-#'                processType = "A16",
-#'                psrType = "B02",
-#'                in_Domain = "10YCZ-CEPS-----N",
-#'                periodStart = "201512312300",
-#'                periodEnd = "201612312300")
-#'  
 generation_get <- function(documentType = NULL,
                         processType = NULL,
                         businessType = NULL,
@@ -174,6 +166,30 @@ generation_helper <- function(html_doc){
     rvest::html_node("body") %>% 
     rvest::html_node("gl_marketdocument")
   
+  # data for time series
+  html_ts <- 
+    html_doc %>% 
+    rvest::html_nodes("timeseries")
+  
+  # nested xml docs. period and interval belong together
+  html_period <- 
+    html_ts %>% 
+    purrr::map(~rvest::html_nodes(.x, "period"))
+  
+  html_point <- 
+    html_period %>% 
+    purrr::map(~rvest::html_nodes(.x, "point"))
+    
+  
+  # nested xml docs. mktpsrtype and mktgeneratingunit belong together
+  html_mktpsrtype <- 
+    html_ts %>% 
+    purrr::map(~rvest::html_nodes(.x, "mktpsrtype"))
+  
+  html_mktgeneratingunit <- 
+    html_mktpsrtype %>%
+    purrr::map(~rvest::html_nodes(.x, "MktGeneratingUnit"))
+  
   ###########################################
   # extract doc info
   #############################################
@@ -210,96 +226,106 @@ generation_helper <- function(html_doc){
            "cancelledTS")
   ids <- tolower(ids)
   
-  html_ts <- 
-    html_doc %>% 
-    rvest::html_nodes("timeseries")
-  
   time_series <- 
     suppressMessages(html_ts %>%
                        purrr::map(~id_extractor(.x, ids)) %>%
                        dplyr::bind_rows() %>%
                        readr::type_convert())
   
-
-  ids <- c("resolution")
-  ids <- tolower(ids)
+  ##################################################
+  # get resolution
+  ##################################################
+  if(length(html_period[[1]]) > 0){
+    ids <- c("resolution")
+    ids <- tolower(ids)
+    
+    time_series$period <- 
+      html_period %>%
+      purrr::map(~id_extractor(.x, ids))
+    
+    ids <- c("start", "end")
+    ids <- tolower(ids)
+    
+    doc_result_ts_timeinterval <- 
+      suppressMessages(html_ts %>% 
+                         rvest::html_nodes("timeinterval") %>%
+                         purrr::map(~id_extractor(.x, ids)) %>%
+                         purrr::map(~readr::type_convert(.x)))
+    
+    time_series$period <- purrr::map2(time_series$period, 
+                                      doc_result_ts_timeinterval, 
+                                      ~dplyr::bind_cols(.x, .y))
+    
+  }
   
-  time_series$period <- 
-    html_ts %>% 
-    purrr::map(~rvest::html_nodes(.x, "period")) %>%
-    purrr::map(~id_extractor(.x, ids))
-  
-  ids <- c("start", "end")
-  ids <- tolower(ids)
-
-  doc_result_ts_timeinterval <- 
-    suppressMessages(html_ts %>% 
-                       rvest::html_nodes("timeinterval") %>%
-                       purrr::map(~id_extractor(.x, ids)) %>%
-                       purrr::map(~readr::type_convert(.x)))
-  
-  time_series$period <- purrr::map2(time_series$period, 
-                                    doc_result_ts_timeinterval, 
-                                    ~dplyr::bind_cols(.x, .y))
-  
-  ids <- c("position", 
-           "quantity",
-           "secondaryQuantity")
-  ids <- tolower(ids)
-  
-  point_get <- 
-    . %>% 
-    purrr::map(~id_extractor(.x, ids)) %>% 
-    dplyr::bind_rows(.)
-  
-  doc_result_ts_ps_p <- 
-    suppressMessages(html_ts %>% 
-                       purrr::map(~rvest::html_nodes(.x, "period")) %>%
-                       purrr::map(~rvest::html_nodes(.x, "point")) %>%
-                       purrr::map(point_get) %>%
-                       purrr::map(~dplyr::bind_rows(.x) %>% readr::type_convert()))
-  
-  time_series$period <- lapply(seq_along(time_series$period), 
-                               function(x){
-                                 point_data <- time_series$period[[x]] 
-                                 point_data$point <- doc_result_ts_ps_p[x]
-                                 
-                                 point_data})
+  ###############################################
+  # Points
+  ##############################################
+  if(length(html_point[[1]]) > 0){
+    ids <- c("position", 
+             "quantity",
+             "secondaryQuantity")
+    ids <- tolower(ids)
+    
+    point_get <- 
+      . %>% 
+      purrr::map(~id_extractor(.x, ids)) %>% 
+      dplyr::bind_rows(.)
+    
+    doc_result_ts_ps_p <- 
+      suppressMessages(html_point %>%
+                         purrr::map(point_get) %>%
+                         purrr::map(~dplyr::bind_rows(.x) %>% readr::type_convert()))
+    
+    time_series$period <- lapply(seq_along(time_series$period), 
+                                 function(x){
+                                   point_data <- time_series$period[[x]] 
+                                   point_data$point <- doc_result_ts_ps_p[x]
+                                   
+                                   point_data})
+    
+  }
   
   ##########################################
   # extract mktpsrtype
   #############################################
-  #### not working on 4.4.3
-  ids <- c("psrType", 
-           "voltage_PowerSystemResources.highVoltageLimit")
-  ids <- tolower(ids)
   
-  time_series$mkt_psr_type <- 
-    suppressMessages(html_ts %>% 
-                       purr::map(~rvest::html_nodes(.x, "mktpsrtype")) %>%
-                       purrr::map(~id_extractor(.x, ids) %>% readr::type_convert(.)))
+  if(length(html_mktpsrtype[[1]]) > 0){
+    #### not working on 4.4.3
+    ids <- c("psrType", 
+             "voltage_PowerSystemResources.highVoltageLimit")
+    ids <- tolower(ids)
+    
+    time_series$mkt_psr_type <- 
+      suppressMessages(html_ts %>% 
+                         purrr::map(~rvest::html_nodes(.x, "mktpsrtype")) %>%
+                         purrr::map(~id_extractor(.x, ids) %>% readr::type_convert(.)))
+    
+  }
   
   ##########################################
   # extract powersystem resources
   #############################################
-  
-  ids <- c("mRID", "name", "nominalIP")
-  ids <- tolower(ids)
-  
-  mkt_generating_unit <- 
-    suppressMessages(html_ts %>% 
-                       purrr::map(~rvest::html_nodes(.x, "mktpsrtype")) %>%
-                       purrr::map(~rvest::html_nodes(.x, "MktGeneratingUnit")) %>%
-                       purrr::map(~id_extractor(.x, ids) %>% readr::type_convert()))
-  
-  time_series$mkt_psr_type <- lapply(seq_along(time_series$mkt_psr_type), 
-                                     function(x){
-                                       psr_data <- time_series$mkt_psr_type[[x]]
-                                       
-                                       psr_data$mkt_generating_unit <- mkt_generating_unit[x]
-                                       
-                                       psr_data
-                                     })
+  if(length(html_mktgeneratingunit[[1]]) > 0){
+    
+    ids <- c("mRID", "name", "nominalIP")
+    ids <- tolower(ids)
+    
+    mkt_generating_unit <- 
+      suppressMessages(html_ts %>% 
+                         purrr::map(~rvest::html_nodes(.x, "mktpsrtype")) %>%
+                         purrr::map(~rvest::html_nodes(.x, "MktGeneratingUnit")) %>%
+                         purrr::map(~id_extractor(.x, ids) %>% readr::type_convert()))
+    
+    time_series$mkt_psr_type <- lapply(seq_along(time_series$mkt_psr_type), 
+                                       function(x){
+                                         psr_data <- time_series$mkt_psr_type[[x]]
+                                         
+                                         psr_data$mkt_generating_unit <- mkt_generating_unit[x]
+                                         
+                                         psr_data
+                                       })
+  }
   
   
   time_series
