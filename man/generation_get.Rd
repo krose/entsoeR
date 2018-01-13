@@ -63,12 +63,4 @@ generation_get(documentType = "A73",
                periodStart = "201512312300",
                periodEnd = "201612312300")
  
-# 4.4.5. Actual Generation Output per Generation Unit [16.1.A]
-generation_get(documentType = "A73",
-               processType = "A16",
-               psrType = "B02",
-               in_Domain = "10YCZ-CEPS-----N",
-               periodStart = "201512312300",
-               periodEnd = "201612312300")
- 
 }
