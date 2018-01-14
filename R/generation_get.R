@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 #' This wraps a GET request to the API
 #' 
 #' There's a limit of 200 documents, so the API will return an
@@ -52,6 +46,7 @@
 #'                periodEnd = "201612312300")
 #'  
 #' # 4.4.3. Day-ahead Aggregated Generation [14.1.C]
+#' # This example is rather slow
 #' generation_get(documentType = "A71",
 #'                processType = "A01",
 #'                in_Domain = "10YCZ-CEPS-----N",
@@ -59,6 +54,7 @@
 #'                periodEnd = "201612312300")
 #'  
 #' # 4.4.4. Day-ahead Generation Forecasts for Wind and Solar [14.1.D]
+#' # This example is rather slow
 #' generation_get(documentType = "A69",
 #'                processType = "A01",
 #'                psrType = "B16",
@@ -67,12 +63,15 @@
 #'                periodEnd = "201612312300")
 #'  
 #' # 4.4.5. Actual Generation Output per Generation Unit [16.1.A]
+#' # This example is rather slow
+#' # This example is slightly modified compared to the example on th API page
+#' # as the API only allows results for one day.
 #' generation_get(documentType = "A73",
 #'                processType = "A16",
 #'                psrType = "B02",
 #'                in_Domain = "10YCZ-CEPS-----N",
 #'                periodStart = "201512312300",
-#'                periodEnd = "201612312300")
+#'                periodEnd = "201601012300")
 #'  
 generation_get <- function(documentType = NULL,
                         processType = NULL,
