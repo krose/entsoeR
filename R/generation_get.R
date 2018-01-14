@@ -327,7 +327,9 @@ generation_helper <- function(html_doc){
                                        })
   }
   
+  # assign the time series to the doc result to keep the document structure.
+  doc_result$time_series <- list(time_series)
   
-  time_series
+  doc_result
 }
 
