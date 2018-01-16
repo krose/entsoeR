@@ -1,11 +1,15 @@
-
 #' TZ mappings.
 #' 
 #' inspired by the entsoe-py
 #' 
-tz_mappings <- function(){
+#' @param area_code Two digit area code for the timezone.
+tz_mapping <- function(area_code){
   
-  TIMEZONE_MAPPINGS = tibble::tribble(
+  if(length(area_code) > 1){
+    stop("The param area_code has to be length one.", call. = FALSE)
+  }
+  
+  timezone_mapping <- tibble::tribble(
     ~short_name, ~long_name,
     'AL', 'Europe/Tirane',
     'AT', 'Europe/Vienna',
@@ -50,5 +54,11 @@ tz_mappings <- function(){
     'UA', 'Europe/Kiev'
   )
   
-  TIMEZONE_MAPPINGS
+  timezone_mapping <- timezone_mapping$long_name[timezone_mapping$short_name == area_code]
+  
+  if(length(timezone_mapping) < 1){
+    stop("The area code is not supported.", call. = FALSE)
+  } 
+  
+  timezone_mapping
 }
