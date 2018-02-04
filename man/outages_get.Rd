@@ -28,7 +28,7 @@ library(entsoeR)
 outages_get(documentType = "A76", 
             periodStart = "201702012300", 
             periodEnd = "201702172300", 
-            BiddingZone_Domain = "10YCZ-CEPS-----N")
+            biddingZone_Domain = "10YCZ-CEPS-----N")
  
  # 4.6.2. Unavailability of Transmission Infrastructure [10.1.A&B]
  outages_get(documentType = "A78", 
