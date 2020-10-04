@@ -3,6 +3,8 @@
 entsoeR
 =======
 
+USE THE [entsoeapi](https://github.com/krose/entsoeapi) PACKAGE INSTEAD OF THIS ONE. THIS PACKAGE WILL NOT GET UPDATED.
+
 entsoeR wraps the [API](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html) from Entso-e.
 
 The API returns some very un-tidy xml and these are made as tidy as possible, but
